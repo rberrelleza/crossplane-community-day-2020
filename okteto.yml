@@ -1,6 +1,4 @@
-name: dev
-labels:
-  app.kubernetes.io/name: "guestbook"
+name: guestbook
 image: ramiro/crossplane-community-day:okteto
 command:
 - bash

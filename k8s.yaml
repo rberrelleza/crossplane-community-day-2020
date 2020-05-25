@@ -1,0 +1,93 @@
+---
+apiVersion: database.example.org/v1alpha1
+kind: PostgreSQLInstanceRequirement
+metadata:
+  name: guestbook
+spec:
+  parameters:
+    storageGB: 5
+    dbName: guestbook
+  compositionSelector:
+    matchLabels:
+      application: "true"
+      tier: "development"
+  writeConnectionSecretToRef:
+    name: db-conn
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: guestbook
+  annotations:
+    dev.okteto.com/generate-host: "true"
+spec:
+  rules:
+  - host: guestbook.sf.okteto.net
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: guestbook
+          servicePort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: guestbook
+  labels:
+    app.kubernetes.io/name: "guestbook"
+  annotations:
+    dev.okteto.com/auto-ingress: "true"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: guestbook
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guestbook
+  labels:
+    app.kubernetes.io/name: "guestbook"
+spec:
+  replicas: 1
+  strategy:
+  selector:
+    matchLabels:
+      app: guestbook
+  template:
+    metadata:
+      labels:
+        app: guestbook
+    spec:
+      containers:
+        - name: guestbook
+          image: ramiro/crossplane-community-day
+          ports:
+            - containerPort: 8080
+          env:
+          - name: PGHOST
+            valueFrom:
+              secretKeyRef:
+                name: db-conn
+                key: endpoint
+          - name: PGPORT
+            valueFrom:
+              secretKeyRef:
+                name: db-conn
+                key: port
+          - name: PGUSER
+            valueFrom:
+              secretKeyRef:
+                name: db-conn
+                key: username
+          - name: PGPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: db-conn
+                key: password
+          - name: PGDATABASE
+            value: "guestbook"
