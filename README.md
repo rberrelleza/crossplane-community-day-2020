@@ -42,12 +42,12 @@ Instead of having every developer pick engine, parameters, DB size, version, etc
 First create the definitions (this is the CRD that your infrastructure consumers will use):
 
 ```
-kubectl create -f setup/postgresqlinstances.yaml
+kubectl apply -f setup/postgresqlinstances.yaml
 ```
 
 And then the composition:
 ```
-kubectl create -f setup/composition.yaml
+kubectl apply -f setup/composition.yaml
 ```
 
 The composition lists all the resources that will be automatically created when the user requests a PostgreSQL instance:
@@ -82,7 +82,7 @@ kubectl create namespace devtime
 
 Deploy the latest version of the application:
 ```
-kubectl create -f k8s.yaml --namespace=devtime
+kubectl apply -f k8s.yaml --namespace=devtime
 ```
 
 Deploying the application will create the following resources:
