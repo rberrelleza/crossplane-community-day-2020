@@ -2,11 +2,19 @@ set -euxo pipefail
 
 accessKey=$1
 accessSecretKey=$2
-awsRegion=$3
+awsRegion='us-west-2'
 
 BASE64ENCODED_AWS_ACCOUNT_CREDS=$(echo "[default]\naws_access_key_id = ${accessKey}\naws_secret_access_key = ${accessSecretKey}" | base64  | tr -d "\n")
 
 cat > provider.yaml <<EOF
+---
+apiVersion: packages.crossplane.io/v1alpha1
+kind: ClusterPackageInstall
+metadata:
+  name: provider-aws
+  namespace: crossplane-system
+spec:
+  package: "crossplane/provider-aws:v0.11.0-rc"
 ---
 apiVersion: v1
 kind: Secret

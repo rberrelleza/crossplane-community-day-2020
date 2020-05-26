@@ -154,6 +154,8 @@ spec:
                 fmt: "%s-postgresql"
         - fromFieldPath: "spec.parameters.storageGB"
           toFieldPath: "spec.forProvider.allocatedStorage"
+        - fromFieldPath: "spec.parameters.dbName"
+          toFieldPath: "spec.forProvider.dbName"
       connectionDetails:
         - fromConnectionSecretKey: username
         - fromConnectionSecretKey: password
