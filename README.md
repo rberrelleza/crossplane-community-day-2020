@@ -1,4 +1,8 @@
 
+# Add Cloud Services to your Development Environment with Okteto and Crossplane
+
+This is the companion code to the talk I gave as part of Crossplane's Community Day 2020.
+
 # Setup
 
 ## Deploy your K8S Cluster
@@ -157,10 +161,11 @@ fresh
 
 Go back to your browser and reload the page. You'll see the same application as before, but now connected to your remote development environment.
 
-The application is not querying any data from the DB. Let's change chat. Open `main.go` in your favorite IDE, and uncomment
+The application is not querying any data from the DB. Let's change chat. Open `main.go` in your favorite IDE, and uncomment the DB code (lines 66-70 and 91-95).
 
-Now, go to the code, and update a file. For example, open `public/index.html` and change the title from `Guestbook` to `My Guestbook`. As soon as you save the file, `okteto` will sync the file, `fresh` will notice it, and it will recompile and reload the go app. 
+As soon as you save the file, `okteto` will sync the file, `fresh` will notice it, and it will recompile and reload the go app. 
 
+Go back to your browser and use the application. Notice how the messages are now being stored and retrieved from the DB instance that we provisioned with Crossplane!
 
 ## Debugging
 
