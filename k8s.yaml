@@ -66,6 +66,7 @@ spec:
       containers:
         - name: guestbook
           image: ramiro/crossplane-community-day
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:

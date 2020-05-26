@@ -26,7 +26,10 @@ RUN apk update \
         ca-certificates \
         && update-ca-certificates 2>/dev/null || true
 
-COPY --from=build /app/guestbook /app/bin/guestbook
+
+WORKDIR /app
+COPY --from=build /app/guestbook /app/guestbook
+COPY --from=build /app/public /app/public
 EXPOSE 8080
-CMD [ "/app/bin/guestbook" ]
+CMD [ "/app/guestbook" ]
 
