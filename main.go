@@ -15,7 +15,7 @@ import (
 	"github.com/go-pg/pg/v10/orm"
 )
 
-var guests []Guest
+var db *pg.DB
 
 type Guest struct {
 	ID      string `json:"-"`
@@ -62,6 +62,14 @@ func envHandler(rw http.ResponseWriter, req *http.Request) {
 }
 
 func getHandler(rw http.ResponseWriter, req *http.Request) {
+	var guests []Guest
+	/*if err := db.Model(&guests).Select(); err != nil {
+		fmt.Printf("error: %s\n", err)
+		rw.WriteHeader(500)
+		return
+	}*/
+
+	rw.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(rw).Encode(guests); err != nil {
 		fmt.Printf("error: %s\n", err)
 		rw.WriteHeader(500)
@@ -80,18 +88,36 @@ func submitHandler(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	guests = append(guests, g)
+	/*if err := db.Insert(&g); err != nil {
+		fmt.Printf("error: %s\n", err)
+		rw.WriteHeader(500)
+		return
+	}*/
+
 	getHandler(rw, req)
 }
 
 func createSchema(db *pg.DB) error {
 	return db.CreateTable(&Guest{}, &orm.CreateTableOptions{
-		Temp: true,
+		IfNotExists: true,
 	})
 }
 
 func main() {
-	guests = []Guest{}
+
+	db = pg.Connect(&pg.Options{
+		Addr:     fmt.Sprintf("%s:%s", os.Getenv("PGHOST"), os.Getenv("PGPORT")),
+		User:     os.Getenv("PGUSER"),
+		Password: os.Getenv("PGPASSWORD"),
+		Database: os.Getenv("PGDATABASE"),
+	})
+
+	defer db.Close()
+
+	err := createSchema(db)
+	if err != nil {
+		panic(err)
+	}
 
 	r := mux.NewRouter()
 	r.Path("/env").Methods("GET").HandlerFunc(envHandler)
@@ -101,5 +127,9 @@ func main() {
 
 	n := negroni.Classic()
 	n.UseHandler(r)
-	n.Run(":8080")
+	port := ":8080"
+	if p, ok := os.LookupEnv("PORT"); ok {
+		port = fmt.Sprintf(":%s", p)
+	}
+	n.Run(port)
 }
