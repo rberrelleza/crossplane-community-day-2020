@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -16,6 +17,7 @@ import (
 )
 
 var db *pg.DB
+var namespace string
 
 // Guest holds the comment and an id
 type Guest struct {
@@ -25,7 +27,8 @@ type Guest struct {
 
 func infoHandler(rw http.ResponseWriter, req *http.Request) {
 	info := make(map[string]string)
-	info["namespace"] = os.Getenv("OKTETO_NAMESPACE")
+
+	info["namespace"] = namespace
 	info["pod"] = os.Getenv("HOSTNAME")
 	info["golang"] = os.Getenv("GOLANG_VERSION")
 
@@ -119,6 +122,13 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+
+	b, err := ioutil.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace")
+	if err != nil {
+		namespace = string(b)
+	}
+
+	namespace = string(b)
 
 	r := mux.NewRouter()
 	r.Path("/env").Methods("GET").HandlerFunc(envHandler)
