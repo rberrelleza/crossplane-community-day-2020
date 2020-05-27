@@ -17,6 +17,7 @@ import (
 
 var db *pg.DB
 
+// Guest holds the comment and an id
 type Guest struct {
 	ID      string `json:"-"`
 	Comment string `json:"comment"`
