@@ -1,7 +1,11 @@
 # syntax = docker/dockerfile:experimental
+
+FROM bitnami/kubectl:1.17.4 as kubectl
+
 FROM golang:1.14 as dev
 WORKDIR /app
 
+COPY --from=kubectl /opt/bitnami/kubectl/bin/kubectl /usr/local/bin/kubectl
 # install dev tools
 RUN apt-get update && \
   apt-get install postgresql-client -y && \ 
