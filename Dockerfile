@@ -23,7 +23,7 @@ FROM dev as build
 COPY . .
 RUN --mount=type=cache,target=/root/.cache/go-build CGO_ENABLED=0 GOOS=linux go build -v -o guestbook .
 
-FROM alpine
+FROM alpine as prod
 RUN apk update \
         && apk upgrade \
         && apk add --no-cache \

@@ -83,7 +83,7 @@ spec:
       serviceAccountName: "dev"
       containers:
         - name: guestbook
-          image: ramiro/crossplane-community-day
+          image: ramiro/crossplane-community-day:0.1
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
